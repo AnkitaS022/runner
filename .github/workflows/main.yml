@@ -2,8 +2,10 @@ name: Docker CI Learning - KUCL
 on:
   push:
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  docker_1:
+    runs-on: ubuntu-latest 
+      #labels: kucl22 
+         
     steps:
       -
         name: Set up QEMU test
@@ -23,3 +25,12 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME}}/kucl22:actions
+  deploy:
+    needs: docker_1
+    name: deploy image
+    runs-on: 
+      labels: kucl22
+    steps:
+      - name: connect and pull
+        run: ssh ${{ secrets.S_USER }}@${{ secrets.D_HOST }} "docker run -d ${{ secrets.DOCKERHUB_USERNAME}}/testing:actions"
+
